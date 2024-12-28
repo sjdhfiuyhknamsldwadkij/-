@@ -1,0 +1,43 @@
+local ScreenGui = Instance.new("ScreenGui")
+local ResetButton = Instance.new("TextButton")
+
+-- Set the ScreenGui parent to the PlayerGui
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+-- Set the ResetButton properties
+ResetButton.Name = "ResetButton"
+ResetButton.Parent = ScreenGui
+ResetButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+ResetButton.Position = UDim2.new(0.5, -50, 0, 10) -- Centered at top
+ResetButton.Size = UDim2.new(0, 100, 0, 30)
+ResetButton.Font = Enum.Font.SourceSansBold
+ResetButton.Text = "Enable Reset"
+ResetButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ResetButton.TextSize = 20.000
+
+-- Your loadstring for reloading
+ResetButton.MouseButton1Click:Connect(function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/pvNpdimg"))()
+end)
+
+-- Function to re-enable GUI after character respawn
+local function onCharacterAdded(character)
+    ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+
+-- Connect the CharacterAdded event to the function
+game.Players.LocalPlayer.CharacterAdded:Connect(onCharacterAdded)
+
+-- Initial setup for when the script first runs
+if game.Players.LocalPlayer.Character then
+    onCharacterAdded(game.Players.LocalPlayer.Character)
+end
+
+
+
+
+
+
+-- Credits to SmartlightYear For Making the Script --
+-- Credits To Me For Making it Better:D -- 
