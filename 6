@@ -1,0 +1,97 @@
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+-- Fireball configuration
+local FIREBALL_SPEED = 70
+local EXPLOSION_RADIUS = 10
+local DAMAGE = 100
+local COOLDOWN = 1
+
+local canShoot = true
+
+-- Function to create a fireball
+local function createFireball()
+    local fireball = Instance.new("Part")
+    fireball.Name = "Fireball"
+    fireball.Size = Vector3.new(2, 2, 2)
+    fireball.Shape = Enum.PartType.Ball
+    fireball.Material = Enum.Material.Neon
+    fireball.BrickColor = BrickColor.new("Really red")
+    fireball.CanCollide = false
+    
+    local fire = Instance.new("Fire")
+    fire.Heat = 25
+    fire.Size = 5
+    fire.Parent = fireball
+    
+    local light = Instance.new("PointLight")
+    light.Color = Color3.fromRGB(255, 100, 0)
+    light.Range = 10
+    light.Brightness = 2
+    light.Parent = fireball
+    
+    return fireball
+end
+
+-- Function to create an explosion
+local function createExplosion(position)
+    local explosion = Instance.new("Explosion")
+    explosion.Position = position
+    explosion.BlastRadius = EXPLOSION_RADIUS
+    explosion.BlastPressure = 500000
+    explosion.DestroyJointRadiusPercent = 0
+    explosion.Parent = workspace
+end
+
+-- Function to shoot a fireball
+local function shootFireball()
+    if not canShoot then return end
+    
+    canShoot = false
+    
+    local fireball = createFireball()
+    fireball.CFrame = humanoidRootPart.CFrame * CFrame.new(0, 0, -2)
+    fireball.Parent = workspace
+    
+    local direction = humanoidRootPart.CFrame.LookVector
+    local bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    bodyVelocity.Velocity = direction * FIREBALL_SPEED
+    bodyVelocity.Parent = fireball
+    
+    fireball.Touched:Connect(function(hit)
+        if hit.Parent and hit.Parent:FindFirstChild("Humanoid") then
+            local humanoid = hit.Parent:FindFirstChild("Humanoid")
+            humanoid.Health = humanoid.Health - DAMAGE
+            createExplosion(fireball.Position)
+            fireball:Destroy()
+        end
+    end)
+    
+    game:GetService("Debris"):AddItem(fireball, 5)
+    
+    wait(COOLDOWN)
+    canShoot = true
+end
+
+-- Connect the input event to shoot fireball
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed and input.KeyCode == Enum.KeyCode.Three then
+        shootFireball()
+    end
+end)
+
+-- Notify the player about the fireball ability
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "Fire Powers Activated",
+    Text = "Press 3 to shoot fireballs!",
+    Duration = 5
+})
+
+
+-- Credits to Smartlightyear For Making the Script --
+-- Credits to Me for Making it FE --
